@@ -28,6 +28,7 @@ from tensor2tensor.data_generators import generator_utils
 from tensor2tensor.data_generators import problem
 from tensor2tensor.data_generators import text_encoder
 from tensor2tensor.data_generators import text_problems
+from tensor2tensor.models import transformer
 from tensor2tensor.utils import registry
 from google.cloud import storage
 
@@ -121,3 +122,14 @@ class TwitterDepressionCharacters(SentimentIMDB):
 
   def global_task_id(self):
     return problem.TaskID.EN_CHR_SENT
+
+@registry.register_hparams
+def transformer_tpu_td():
+  """
+  HParams for Transformer model on TPU and 
+  finetuned for twitter depression (td) classification.
+  """
+  hparams = transformer.transformer_base()
+  hparams.learning_rate = 0.025
+  update_hparams_for_tpu(hparams)
+  return hparams
