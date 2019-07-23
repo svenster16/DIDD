@@ -42,13 +42,12 @@ def _original_vocab(tmp_dir):
   Returns:
     a set of strings
   """
-  storage_client = storage.Client()
-  bucket = storage_client.get_bucket('sventestbucket')
-  vocab_filename = 'vocab.depression_twitter.32768.subwords'
+  vocab_url = ("http://download.tensorflow.org/models/LM_LSTM_CNN/"
+               "vocab-2016-09-10.txt")
+  vocab_filename = os.path.basename(vocab_url + ".en")
   vocab_filepath = os.path.join(tmp_dir, vocab_filename)
-  blob = bucket.blob(vocab_filename)
   if not os.path.exists(vocab_filepath):
-      blob.download_to_filename(vocab_filepath)
+    generator_utils.maybe_download(tmp_dir, vocab_filename, vocab_url)
   return set([
       text_encoder.native_to_unicode(l.strip())
       for l in tf.gfile.Open(vocab_filepath)
