@@ -131,5 +131,5 @@ def transformer_tpu_td():
   """
   hparams = transformer.transformer_base()
   hparams.learning_rate = 0.025
-  update_hparams_for_tpu(hparams)
+  transformer.update_hparams_for_tpu(hparams)
   return hparams
