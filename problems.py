@@ -74,11 +74,6 @@ def _test_data_filenames(tmp_dir):
 @registry.register_problem
 class TwitterDepression(text_problems.Text2ClassProblem):
     """Twitter depression classification."""
-
-    @property
-    def packed_length(self):
-        return 256
-
     @property
     def is_generate_per_split(self):
         return True
