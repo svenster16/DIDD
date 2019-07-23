@@ -1,0 +1,123 @@
+# coding=utf-8
+# Copyright 2019 The Tensor2Tensor Authors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# Edited by Sven Marnauzs for academic research use
+
+"""Twitter Depression Classification Problem."""
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
+import os
+import tarfile
+from six.moves import range
+from tensor2tensor.data_generators import generator_utils
+from tensor2tensor.data_generators import problem
+from tensor2tensor.data_generators import text_encoder
+from tensor2tensor.data_generators import text_problems
+from tensor2tensor.utils import registry
+from google.cloud import storage
+
+import tensorflow as tf
+
+def download_blob(tmp_dir):
+    """Downloads a blob from the bucket."""
+    storage_client = storage.Client()
+    bucket = storage_client.get_bucket('sventestbucket')
+    corpus_filename = 'twitterData.zip'
+    corpus_filepath = os.path.join(tmp_dir,corpus_filename)
+    blob = bucket.blob(corpus_filename)
+    if not os.path.exists(corpus_filepath):
+        blob.download_to_filename(corpus_filepath)
+        import zipfile
+        with zipfile.ZipFile(corpus_filepath, 'r') as zip_ref:
+            zip_ref.extractall(tmp_dir)
+
+def _train_data_filenames(tmp_dir):
+  return [
+      (os.path.join(tmp_dir,
+                   "control_training.txt"), False),
+      (os.path.join(tmp_dir,
+                   "depression_training.txt"), True)
+  ]
+
+def _dev_data_filenames(tmp_dir):
+  return [
+      (os.path.join(tmp_dir,
+                   "control_dev.txt"), False),
+      (os.path.join(tmp_dir,
+                   "depression_dev.txt"), True)
+  ]
+
+def _test_data_filenames(tmp_dir):
+  return [
+      (os.path.join(tmp_dir,
+                   "control_test.txt"), False),
+      (os.path.join(tmp_dir,
+                   "depression_test.txt"), True)
+  ]
+
+@registry.register_problem
+class TwitterDepression(text_problems.Text2ClassProblem):
+    """Twitter depression classification."""
+
+    @property
+    def packed_length(self):
+        return 256
+
+    @property
+    def is_generate_per_split(self):
+        return True
+
+    @property
+    def approx_vocab_size(self):
+        return 2 ** 15  # 32768
+
+    @property
+    def num_classes(self):
+        return 2
+
+    def class_labels(self, data_dir):
+        del data_dir
+        return ["Control", "Depression"]
+
+    def generate_samples(self, data_dir, tmp_dir, dataset_split):
+        """Generate examples."""
+        download_blob(tmp_dir)
+        # Generate examples
+        split_files = {
+            problem.DatasetSplit.TRAIN: _train_data_filenames(tmp_dir),
+            problem.DatasetSplit.EVAL: _dev_data_filenames(tmp_dir),
+            problem.DatasetSplit.TEST: _test_data_filenames(tmp_dir),
+        }
+        files = split_files[dataset_split]
+        for filepath, label in files:
+            tf.logging.info("filepath = %s", filepath)
+            for line in tf.gfile.Open(filepath):
+                yield {
+                    "inputs": line,
+                    "label": int(label),
+                }
+@registry.register_problem
+class TwitterDepressionCharacters(SentimentIMDB):
+  """Twitter depresssion classification, character level."""
+
+  @property
+  def vocab_type(self):
+    return text_problems.VocabType.CHARACTER
+
+  def global_task_id(self):
+    return problem.TaskID.EN_CHR_SENT
