@@ -113,7 +113,7 @@ class TwitterDepression(text_problems.Text2ClassProblem):
                     "label": int(label),
                 }
 @registry.register_problem
-class TwitterDepressionCharacters(SentimentIMDB):
+class TwitterDepressionCharacters(TwitterDepression):
   """Twitter depresssion classification, character level."""
 
   @property
