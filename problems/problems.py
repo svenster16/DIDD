@@ -34,13 +34,49 @@ from google.cloud import storage
 
 import tensorflow as tf
 
+def _original_vocab(tmp_dir):
+  """Returns a set containing the original vocabulary.
+  This is important for comparing with published results.
+  Args:
+    tmp_dir: directory containing dataset.
+  Returns:
+    a set of strings
+  """
+  storage_client = storage.Client()
+  bucket = storage_client.get_bucket('sventestbucket')
+  vocab_filename = 'vocab.depression_twitter.32768.subwords'
+  vocab_filepath = os.path.join(tmp_dir, vocab_filename)
+  blob = bucket.blob(vocab_filename)
+  if not os.path.exists(vocab_filepath):
+      blob.download_to_filename(vocab_filepath)
+  return set([
+      text_encoder.native_to_unicode(l.strip())
+      for l in tf.gfile.Open(vocab_filepath)
+  ])
+
+def _replace_oov(original_vocab, line):
+  """Replace out-of-vocab words with "UNK".
+  This maintains compatibility with published results.
+  Args:
+    original_vocab: a set of strings (The standard vocabulary for the dataset)
+    line: a unicode string - a space-delimited sequence of words.
+  Returns:
+    a unicode string - a space-delimited sequence of words.
+  """
+  return u" ".join(
+      [word if word in original_vocab else u"UNK" for word in line.split()])
+
 def download_blob(tmp_dir):
     """Downloads a blob from the bucket."""
     storage_client = storage.Client()
     bucket = storage_client.get_bucket('sventestbucket')
     corpus_filename = 'twitterData.zip'
+    vocab_filename = 'vocab.depression_twitter.32768.subwords'
     corpus_filepath = os.path.join(tmp_dir,corpus_filename)
+    vocab_filepath = os.path.join(tmp_dir,vocab_filename)
     blob = bucket.blob(corpus_filename)
+    if not os.path.exists(vocab_filepath):
+        blob.download_to_filename(vocab_filepath)
     if not os.path.exists(corpus_filepath):
         blob.download_to_filename(corpus_filepath)
         import zipfile
@@ -99,12 +135,14 @@ class TwitterDepression(text_problems.Text2ClassProblem):
             problem.DatasetSplit.EVAL: _dev_data_filenames(tmp_dir),
             problem.DatasetSplit.TEST: _test_data_filenames(tmp_dir),
         }
+        original_vocab = _original_vocab(tmp_dir)
         files = split_files[dataset_split]
         for filepath, label in files:
             tf.logging.info("filepath = %s", filepath)
             for line in tf.gfile.Open(filepath):
+                txt = _replace_oov(original_vocab, text_encoder.native_to_unicode(line))
                 yield {
-                    "inputs": line,
+                    "inputs": txt,
                     "label": int(label),
                 }
 @registry.register_problem
