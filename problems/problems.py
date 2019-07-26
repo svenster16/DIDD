@@ -107,7 +107,7 @@ def _dev_data_filenames(tmp_dir):
 def _test_data_filenames(tmp_dir):
   return [
       (os.path.join(tmp_dir,
-                   "test_set.txt"), False)
+                   "test_text.txt"), False)
   ]
 
 @registry.register_problem
@@ -124,7 +124,7 @@ class TwitterDepression(text_problems.Text2ClassProblem):
             "shards": 1,
         }, {
             "split": problem.DatasetSplit.TEST,
-            "shards": 20,
+            "shards": 1,
         }]
     @property
     def is_generate_per_split(self):
