@@ -73,13 +73,15 @@ def download_blob(tmp_dir):
     vocab_filename = 'vocab.depression_twitter.32768.subwords'
     corpus_filepath = os.path.join(tmp_dir,corpus_filename)
     vocab_filepath = os.path.join(tmp_dir,vocab_filename)
-    testset_filename = 'twitter_test_data/test_text.txt'
+    testset_filename = 'test_text.txt'
     testset_filepath = os.path.join(tmp_dir,testset_filename)
     blob = bucket.blob(corpus_filename)
+    blob2 = bucket.blob(vocab_filename)
+    blob3 = bucket.blob('twitter_test_data/'+testset_filename)
     if not os.path.exists(vocab_filepath):
-        blob.download_to_filename(vocab_filepath)
+        blob2.download_to_filename(vocab_filepath)
     if not os.path.exists(testset_filepath):
-        blob.download_to_filename(testset_filepath)
+        blob3.download_to_filename(testset_filepath)
     if not os.path.exists(corpus_filepath):
         blob.download_to_filename(corpus_filepath)
         import zipfile
