@@ -8,7 +8,7 @@ def download_blob(tmp_dir):
     """Downloads a blob from the bucket."""
     storage_client = storage.Client()
     bucket = storage_client.get_bucket('sventestbucket')
-    test_filename = 'test_output.txt'
+    test_filename = 'test_output2.txt.transformer_encoder.transformer_tpu_td.twitter_depression.beam1.alpha0.6.decodes'
     test_users_filename = 'test_users.txt'
     test_filepath = os.path.join(tmp_dir,test_filename)
     test_users_filepath = os.path.join(tmp_dir,test_users_filename)
@@ -20,7 +20,7 @@ def download_blob(tmp_dir):
         blob2.download_to_filename(test_users_filepath)
 
 def _test_output_filename(tmp_dir):
-    return os.path.join(tmp_dir,'test_output.txt')
+    return os.path.join(tmp_dir,'test_output2.txt.transformer_encoder.transformer_tpu_td.twitter_depression.beam1.alpha0.6.decodes')
 
 def _test_users_filename(tmp_dir):
     return os.path.join(tmp_dir,'test_users.txt')
