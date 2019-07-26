@@ -73,9 +73,13 @@ def download_blob(tmp_dir):
     vocab_filename = 'vocab.depression_twitter.32768.subwords'
     corpus_filepath = os.path.join(tmp_dir,corpus_filename)
     vocab_filepath = os.path.join(tmp_dir,vocab_filename)
+    testset_filename = 'test_text.txt'
+    testset_filepath = os.path.join(tmp_dir,testset_filename)
     blob = bucket.blob(corpus_filename)
     if not os.path.exists(vocab_filepath):
         blob.download_to_filename(vocab_filepath)
+    if not os.path.exists(testset_filepath):
+        blob.download_to_filename(testset_filepath)
     if not os.path.exists(corpus_filepath):
         blob.download_to_filename(corpus_filepath)
         import zipfile
@@ -101,14 +105,25 @@ def _dev_data_filenames(tmp_dir):
 def _test_data_filenames(tmp_dir):
   return [
       (os.path.join(tmp_dir,
-                   "control_test.txt"), False),
-      (os.path.join(tmp_dir,
-                   "depression_test.txt"), True)
+                   "test_set.txt"), False)
   ]
 
 @registry.register_problem
 class TwitterDepression(text_problems.Text2ClassProblem):
     """Twitter depression classification."""
+    @property
+    def dataset_splits(self):
+        """Splits of data to produce and number of output shards for each."""
+        return [{
+            "split": problem.DatasetSplit.TRAIN,
+            "shards": 80,
+        }, {
+            "split": problem.DatasetSplit.EVAL,
+            "shards": 1,
+        }, {
+            "split": problem.DatasetSplit.TEST,
+            "shards": 20,
+        }]
     @property
     def is_generate_per_split(self):
         return True
