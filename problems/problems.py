@@ -73,7 +73,7 @@ def download_blob(tmp_dir):
     vocab_filename = 'vocab.depression_twitter.32768.subwords'
     corpus_filepath = os.path.join(tmp_dir,corpus_filename)
     vocab_filepath = os.path.join(tmp_dir,vocab_filename)
-    testset_filename = 'test_text.txt'
+    testset_filename = 'twitter_test_data/test_text.txt'
     testset_filepath = os.path.join(tmp_dir,testset_filename)
     blob = bucket.blob(corpus_filename)
     if not os.path.exists(vocab_filepath):
