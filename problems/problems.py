@@ -165,6 +165,23 @@ class TwitterDepression(text_problems.Text2ClassProblem):
 class TwitterDepressionCharacters(TwitterDepression):
   """Twitter depresssion classification, character level."""
 
+  def generate_samples(self, data_dir, tmp_dir, dataset_split):
+      """Generate examples."""
+      download_blob(tmp_dir)
+      # Generate examples
+      split_files = {
+          problem.DatasetSplit.TRAIN: _train_data_filenames(tmp_dir),
+          problem.DatasetSplit.EVAL: _dev_data_filenames(tmp_dir),
+          problem.DatasetSplit.TEST: _test_data_filenames(tmp_dir),
+      }
+      files = split_files[dataset_split]
+      for filepath, label in files:
+          tf.logging.info("filepath = %s", filepath)
+          for line in tf.gfile.Open(filepath):
+              yield {
+                    "inputs": line,
+                    "label": int(label),
+                }
   @property
   def vocab_type(self):
     return text_problems.VocabType.CHARACTER
