@@ -173,3 +173,12 @@ class RedditDepressionCharacters(RedditDepression):
   def global_task_id(self):
     return problem.TaskID.EN_CHR_SENT
 
+@registry.register_hparams
+def transformer_oom():
+  """
+  HParams for Transformer model on TPU and
+  finetuned for twitter depression (td) classification.
+  """
+  hparams = transformer.transformer_base()
+  hparams.batch_size = 2048
+  return hparams
