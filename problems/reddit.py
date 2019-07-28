@@ -106,10 +106,8 @@ def _dev_data_filenames(tmp_dir):
 def _test_data_filenames(tmp_dir):
   return [
       (os.path.join(tmp_dir,
-                   "reddit_test_set.txt"), False),
-      (os.path.join(tmp_dir,
-                   "depression_validation.txt"), True)
-  ]
+                   "reddit_test_set.txt"), False)
+      ]
 
 @registry.register_problem
 class RedditDepression(text_problems.Text2ClassProblem):
