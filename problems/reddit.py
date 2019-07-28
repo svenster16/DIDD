@@ -70,7 +70,7 @@ def download_blob(tmp_dir):
     storage_client = storage.Client()
     bucket = storage_client.get_bucket('sventestbucket')
     corpus_filename = 'reddit_training_data.zip'
-    test_filename = 'reddit_test_data.txt'
+    test_filename = 'reddit_test_set.txt'
     test_filepath = os.path.join(tmp_dir,test_filename)
     vocab_filename = 'vocab.depression_twitter.32768.subwords'
     corpus_filepath = os.path.join(tmp_dir,corpus_filename)
