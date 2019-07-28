@@ -70,13 +70,18 @@ def download_blob(tmp_dir):
     storage_client = storage.Client()
     bucket = storage_client.get_bucket('sventestbucket')
     corpus_filename = 'reddit_training_data.zip'
+    test_filename = 'reddit_test_data.txt'
+    test_filepath = os.path.join(tmp_dir,test_filename)
     vocab_filename = 'vocab.depression_twitter.32768.subwords'
     corpus_filepath = os.path.join(tmp_dir,corpus_filename)
     vocab_filepath = os.path.join(tmp_dir,vocab_filename)
     blob = bucket.blob('reddit_data/'+corpus_filename)
+    testdatablob = bucket.blob('reddit_data/' + corpus_filename)
     blob2 = bucket.blob(vocab_filename)
     if not os.path.exists(vocab_filepath):
         blob2.download_to_filename(vocab_filepath)
+    if not os.path.exists(test_filepath):
+        testdatablob.download_to_filename(test_filepath)
     if not os.path.exists(corpus_filepath):
         blob.download_to_filename(corpus_filepath)
         import zipfile
