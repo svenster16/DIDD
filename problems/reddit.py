@@ -98,13 +98,21 @@ def _dev_data_filenames(tmp_dir):
       (os.path.join(tmp_dir,
                    "depression_validation.txt"), True)
   ]
+def _test_data_filenames(tmp_dir):
+  return [
+      (os.path.join(tmp_dir,
+                   "reddit_test_set.txt"), False),
+      (os.path.join(tmp_dir,
+                   "depression_validation.txt"), True)
+  ]
 
 @registry.register_problem
 class RedditDepression(text_problems.Text2ClassProblem):
     """Twitter depression classification."""
+    """
     @property
     def dataset_splits(self):
-        """Splits of data to produce and number of output shards for each."""
+        #Splits of data to produce and number of output shards for each.
         return [{
             "split": problem.DatasetSplit.TRAIN,
             "shards": 100,
@@ -112,14 +120,25 @@ class RedditDepression(text_problems.Text2ClassProblem):
             "split": problem.DatasetSplit.EVAL,
             "shards": 5,
         }]
+    """
+
+    @property
+    def dataset_splits(self):
+        """Splits of data to produce and number of output shards for each."""
+        return [{
+            "split": problem.DatasetSplit.TEST,
+            "shards": 1,
+       }]
+
+    @property
+    def already_shuffled(self):
+        return True
     @property
     def is_generate_per_split(self):
         return True
-
     @property
     def approx_vocab_size(self):
         return 2 ** 15  # 32768
-
     @property
     def num_classes(self):
         return 2
@@ -135,6 +154,7 @@ class RedditDepression(text_problems.Text2ClassProblem):
         split_files = {
             problem.DatasetSplit.TRAIN: _train_data_filenames(tmp_dir),
             problem.DatasetSplit.EVAL: _dev_data_filenames(tmp_dir),
+            problem.DatasetSplit.TEST: _test_data_filenames(tmp_dir),
         }
         original_vocab = _original_vocab(tmp_dir)
         files = split_files[dataset_split]

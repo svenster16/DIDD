@@ -28,6 +28,7 @@ from tensor2tensor.data_generators import generator_utils
 from tensor2tensor.data_generators import problem
 from tensor2tensor.data_generators import text_encoder
 from tensor2tensor.data_generators import text_problems
+from tensor2tensor.data_generators import wiki_lm
 from tensor2tensor.models import transformer
 from tensor2tensor.utils import registry
 from google.cloud import storage
@@ -164,30 +165,20 @@ class TwitterDepression(text_problems.Text2ClassProblem):
 @registry.register_problem
 class TwitterDepressionCharacters(TwitterDepression):
   """Twitter depresssion classification, character level."""
-
-  def generate_samples(self, data_dir, tmp_dir, dataset_split):
-      """Generate examples."""
-      download_blob(tmp_dir)
-      # Generate examples
-      split_files = {
-          problem.DatasetSplit.TRAIN: _train_data_filenames(tmp_dir),
-          problem.DatasetSplit.EVAL: _dev_data_filenames(tmp_dir),
-          problem.DatasetSplit.TEST: _test_data_filenames(tmp_dir),
-      }
-      files = split_files[dataset_split]
-      for filepath, label in files:
-          tf.logging.info("filepath = %s", filepath)
-          for line in tf.gfile.Open(filepath):
-              yield {
-                    "inputs": line,
-                    "label": int(label),
-                }
   @property
   def vocab_type(self):
     return text_problems.VocabType.CHARACTER
 
   def global_task_id(self):
     return problem.TaskID.EN_CHR_SENT
+
+@registry.register_problem
+class MultiTwitterWikiLMSharedVocab64k(TwitterDepression):
+  """MultiNLI classification problems with the Wiki vocabulary."""
+
+  @property
+  def use_vocab_from_other_problem(self):
+    return wiki_lm.LanguagemodelEnWiki64k()
 
 @registry.register_hparams
 def transformer_tall_tpu():
