@@ -69,8 +69,8 @@ def download_blob(tmp_dir):
     """Downloads a blob from the bucket."""
     storage_client = storage.Client()
     bucket = storage_client.get_bucket('sventestbucket')
-    corpus_filename = 'reddit_training_data.zip'
-    test_filename = 'reddit_test_set'
+    corpus_filename = 'reddit_data.zip'
+    test_filename = 'reddit_test_set.txt'
     test_filepath = os.path.join(tmp_dir,test_filename)
     vocab_filename = 'vocab.depression_twitter.32768.subwords'
     corpus_filepath = os.path.join(tmp_dir,corpus_filename)
@@ -106,13 +106,12 @@ def _dev_data_filenames(tmp_dir):
 def _test_data_filenames(tmp_dir):
   return [
       (os.path.join(tmp_dir,
-                   "reddit_test_set"), False)
+                   "reddit_test_set.txt"), False)
       ]
 
 @registry.register_problem
 class RedditDepression(text_problems.Text2ClassProblem):
     """Twitter depression classification."""
-    """
     @property
     def dataset_splits(self):
         #Splits of data to produce and number of output shards for each.
@@ -123,11 +122,10 @@ class RedditDepression(text_problems.Text2ClassProblem):
             "split": problem.DatasetSplit.EVAL,
             "shards": 5,
         }]
-    """
-
+"""
     @property
     def dataset_splits(self):
-        """Splits of data to produce and number of output shards for each."""
+        Splits of data to produce and number of output shards for each.
         return [{
             "split": problem.DatasetSplit.TEST,
             "shards": 1,
@@ -136,6 +134,7 @@ class RedditDepression(text_problems.Text2ClassProblem):
     @property
     def already_shuffled(self):
         return True
+"""
     @property
     def is_generate_per_split(self):
         return True
