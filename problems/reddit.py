@@ -89,22 +89,22 @@ def download_blob(tmp_dir):
             zip_ref.extractall(tmp_dir)
 
 def _train_data_filenames(tmp_dir):
-  return [
+    return [
       (os.path.join(tmp_dir,
                    "control_training.txt"), False),
       (os.path.join(tmp_dir,
                    "depression_training.txt"), True)
-  ]
+    ]
 
 def _dev_data_filenames(tmp_dir):
-  return [
+    return [
       (os.path.join(tmp_dir,
                    "control_validation.txt"), False),
       (os.path.join(tmp_dir,
                    "depression_validation.txt"), True)
-  ]
+    ]
 def _test_data_filenames(tmp_dir):
-  return [
+    return [
       (os.path.join(tmp_dir,
                    "reddit_test_set.txt"), False)
       ]
@@ -122,7 +122,7 @@ class RedditDepression(text_problems.Text2ClassProblem):
             "split": problem.DatasetSplit.EVAL,
             "shards": 5,
         }]
-"""
+    """
     @property
     def dataset_splits(self):
         Splits of data to produce and number of output shards for each.
@@ -134,7 +134,7 @@ class RedditDepression(text_problems.Text2ClassProblem):
     @property
     def already_shuffled(self):
         return True
-"""
+    """
     @property
     def is_generate_per_split(self):
         return True
