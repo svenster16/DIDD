@@ -50,7 +50,7 @@ class Lm1bSocialMediaDepression(multi_problem_v2.MultiProblemV2):
     schedule = 'step @0 1.0 0.0 0.0 @10000 0.0 0.5 0.5'
 
     super(Lm1bSocialMediaDepression, self).__init__(
-        problems, schedule, was_reversed=was_reversed, was_copy=was_copy)
+        problemos, schedule, was_reversed=was_reversed, was_copy=was_copy)
 
   @property
   def use_vocab_from_other_problem(self):
