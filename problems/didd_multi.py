@@ -28,7 +28,7 @@ from tensor2tensor.data_generators import generator_utils
 from tensor2tensor.data_generators import problem
 from tensor2tensor.data_generators import text_encoder
 from tensor2tensor.data_generators import text_problems
-from tensor2tensor.data_generators import multi_problem
+from tensor2tensor.data_generators import multi_problem_v2
 from tensor2tensor.data_generators import lm1b
 from . import problems
 from . import reddit
@@ -40,7 +40,7 @@ import tensorflow as tf
 
 
 @registry.register_problem
-class Lm1bSocialMediaDepression(multi_problem.MultiProblem):
+class Lm1bSocialMediaDepression(multi_problem_v2.MultiProblemV2):
   """LM1b and Depression mixed problem class for multitask learning."""
 
   def __init__(self, was_reversed=False, was_copy=False):
