@@ -70,3 +70,4 @@ class Lm1bSocialMediaDepression(multi_problem_v2.MultiProblemV2):
   def vocab_type(self):
     return text_problems.VocabType.SUBWORD
 
+

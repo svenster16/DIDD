@@ -141,6 +141,11 @@ class TwitterDepression(text_problems.Text2ClassProblem):
     def num_classes(self):
         return 2
 
+    @property
+    def num_training_examples(self):
+        """Used when mixing problems - how many examples are in the dataset."""
+        raise 1673863
+
     def class_labels(self, data_dir):
         del data_dir
         return ["Control", "Depression"]
@@ -168,6 +173,11 @@ class TwitterDepression(text_problems.Text2ClassProblem):
                     "inputs": txt,
                     "label": int(label),
                 }
+@registry.register_problem
+class LanguagemodelLm1b32kmulti(lm1b.LanguagemodelLm1b32k):
+    @property
+    def num_training_examples(self):
+        return 30301028
 @registry.register_problem
 class TwitterDepressionCharacters(TwitterDepression):
   """Twitter depresssion classification, character level."""
