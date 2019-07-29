@@ -44,10 +44,17 @@ class Lm1bSocialMediaDepression(multi_problem_v2.MultiProblemV2):
   """LM1b and Depression mixed problem class for multitask learning."""
 
   def __init__(self, was_reversed=False, was_copy=False):
-    super(Lm1bSocialMediaDepression, self).__init__(was_reversed, was_copy)
-    self.task_list.append(lm1b.LanguagemodelLm1b32k())
-    self.task_list.append(problems.TwitterDepression())
-    self.task_list.append(reddit.RedditDepression())
+    problemos = [lm1b.LanguagemodelLm1b32k(),
+                problems.TwitterDepression(),
+                 reddit.RedditDepression()]
+    schedule = 'step @0 1.0 0.0 0.0 @10000 0.0 0.5 0.5'
+
+    super(Lm1bSocialMediaDepression, self).__init__(
+        problems, schedule, was_reversed=was_reversed, was_copy=was_copy)
+
+  @property
+  def use_vocab_from_other_problem(self):
+    return lm1b.LanguagemodelLm1b32k()
 
   @property
   def vocab_type(self):
