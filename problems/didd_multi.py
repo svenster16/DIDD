@@ -58,7 +58,7 @@ class Lm1bSocialMediaDepression(multi_problem_v2.MultiProblemV2):
   def problems_and_rates(self):
     """Returns a list of (weight, also_reverse, problem_class) triples."""
     return [
-        (1.0, False, lm1b.LanguagemodelLm1b32kmulti),
+        (1.0, False, problems.LanguagemodelLm1b32kmulti),
         (50.0, False, problems.TwitterDepression),
         (10.0, False, reddit.RedditDepression),
     ]
