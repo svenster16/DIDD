@@ -75,8 +75,8 @@ if __name__ == '__main__':
     test_filename ='test_reddit_output.txt.transformer_encoder.transformer_oom.reddit_depression.beam4.alpha0.6.decodes'
     user_filename = 'reddit_test_users.txt'
     download_blob(tmp_dir,test_filename,user_filename)
-    test_output_filename = _test_output_filename(tmp_dir)
-    test_users_filename = _test_users_filename(tmp_dir)
+    test_output_filename = _test_output_filename(tmp_dir,test_filename)
+    test_users_filename = _test_users_filename(tmp_dir,user_filename)
 
     user_post_classes = defaultdict(list)
     user_class = {}
