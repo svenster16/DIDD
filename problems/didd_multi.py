@@ -47,7 +47,7 @@ class Lm1bSocialMediaDepression(multi_problem_v2.MultiProblemV2):
     problemos = [lm1b.LanguagemodelLm1b32k(),
                 problems.TwitterDepression(),
                  reddit.RedditDepression()]
-    schedule = 'step @0 1.0 0.0 0.0 @10000 0.0 0.5 0.5'
+    schedule = 'step @0 1.0 0.0 0.0 @10000 1.0 0.0 0.0'
 
     super(Lm1bSocialMediaDepression, self).__init__(
         problemos, schedule, was_reversed=was_reversed, was_copy=was_copy)
