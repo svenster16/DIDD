@@ -117,10 +117,10 @@ class RedditDepression(text_problems.Text2ClassProblem):
         #Splits of data to produce and number of output shards for each.
         return [{
             "split": problem.DatasetSplit.TRAIN,
-            "shards": 100,
+            "shards": 50,
         }, {
             "split": problem.DatasetSplit.EVAL,
-            "shards": 5,
+            "shards": 50,
         }]
     """
     @property
