@@ -4,26 +4,26 @@ from collections import defaultdict
 import numpy as np
 
 
-def download_blob(tmp_dir):
+def download_blob(tmp_dir, filename_output, filename_users):
     """Downloads a blob from the bucket."""
     storage_client = storage.Client()
     bucket = storage_client.get_bucket('sventestbucket')
-    test_filename = 'test_output2.txt.transformer_encoder.transformer_tpu_td.twitter_depression.beam4.alpha0.6.decodes'
-    test_users_filename = 'test_users.txt'
+    test_filename = filename_output
+    test_users_filename = filename_users
     test_filepath = os.path.join(tmp_dir,test_filename)
     test_users_filepath = os.path.join(tmp_dir,test_users_filename)
     blob = bucket.blob(os.path.join('test_results/',test_filename))
-    blob2 = bucket.blob(os.path.join(test_users_filename))
+    blob2 = bucket.blob(os.path.join('test_results/',test_users_filename))
     if not os.path.exists(test_filepath):
         blob.download_to_filename(test_filepath)
     if not os.path.exists(test_users_filepath):
         blob2.download_to_filename(test_users_filepath)
 
-def _test_output_filename(tmp_dir):
-    return os.path.join(tmp_dir,'test_output2.txt.transformer_encoder.transformer_tpu_td.twitter_depression.beam4.alpha0.6.decodes')
+def _test_output_filename(tmp_dir,filename):
+    return os.path.join(tmp_dir,filename)
 
-def _test_users_filename(tmp_dir):
-    return os.path.join(tmp_dir,'test_users.txt')
+def _test_users_filename(tmp_dir,filename):
+    return os.path.join(tmp_dir,filename)
 
 
 def average_precision(rankedpeople, goldconditions, condPOS, condNEG):
@@ -72,7 +72,9 @@ if __name__ == '__main__':
             raise
         pass
     tmp_dir='/tmp/t2t'
-    download_blob(tmp_dir)
+    test_filename ='test_reddit_output.txt.transformer_encoder.transformer_oom.reddit_depression.beam4.alpha0.6.decodes'
+    user_filename = 'reddit_test_users.txt'
+    download_blob(tmp_dir,test_filename,user_filename)
     test_output_filename = _test_output_filename(tmp_dir)
     test_users_filename = _test_users_filename(tmp_dir)
 
@@ -83,12 +85,12 @@ if __name__ == '__main__':
     users = open(test_users_filename, 'r').readlines()
     current_user = ''
     usercndn = False
-    for i,line in enumerate(users):
+    for i,post_class in enumerate(output):
+        line = users[i]
         m = re.search(pattern, line)
         cndn = m.group(1)
         m = re.sub(pattern, '', line)
         userid = m
-        post_class=output[i]
         user_class[userid.split()[0]] = cndn
         user_post_classes[userid.split()[0]].append(post_class.split()[0])
     for usrid in user_class:
