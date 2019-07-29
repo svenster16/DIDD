@@ -28,6 +28,7 @@ from tensor2tensor.data_generators import generator_utils
 from tensor2tensor.data_generators import problem
 from tensor2tensor.data_generators import text_encoder
 from tensor2tensor.data_generators import text_problems
+from tensor2tensor.data_generators import lm1b
 from tensor2tensor.models import transformer
 from tensor2tensor.utils import registry
 from google.cloud import storage
@@ -138,6 +139,9 @@ class RedditDepression(text_problems.Text2ClassProblem):
     @property
     def is_generate_per_split(self):
         return True
+    @property
+    def vocab_filename(self):
+        return lm1b.LanguagemodelLm1b().vocab_filename
     @property
     def approx_vocab_size(self):
         return 2 ** 15  # 32768

@@ -41,7 +41,7 @@ import tensorflow as tf
 
 @registry.register_problem
 class Lm1bSocialMediaDepression(multi_problem.MultiProblem):
-  """LM1b and IMDb mixed problem class for multitask learning."""
+  """LM1b and Depression mixed problem class for multitask learning."""
 
   def __init__(self, was_reversed=False, was_copy=False):
     super(Lm1bSocialMediaDepression, self).__init__(was_reversed, was_copy)
@@ -53,12 +53,3 @@ class Lm1bSocialMediaDepression(multi_problem.MultiProblem):
   def vocab_type(self):
     return text_problems.VocabType.SUBWORD
 
-@registry.register_hparams
-def transformer_oom():
-  """
-  HParams for Transformer model on TPU and
-  finetuned for twitter depression (td) classification.
-  """
-  hparams = transformer.transformer_base()
-  hparams.batch_size = 2048
-  return hparams

@@ -29,6 +29,8 @@ from tensor2tensor.data_generators import problem
 from tensor2tensor.data_generators import text_encoder
 from tensor2tensor.data_generators import text_problems
 from tensor2tensor.data_generators import wiki_lm
+from tensor2tensor.data_generators import lm1b
+
 from tensor2tensor.models import transformer
 from tensor2tensor.utils import registry
 from google.cloud import storage
@@ -142,6 +144,10 @@ class TwitterDepression(text_problems.Text2ClassProblem):
     def class_labels(self, data_dir):
         del data_dir
         return ["Control", "Depression"]
+
+    @property
+    def vocab_filename(self):
+        return lm1b.LanguagemodelLm1b().vocab_filename
 
     def generate_samples(self, data_dir, tmp_dir, dataset_split):
         """Generate examples."""
