@@ -47,7 +47,7 @@ class Lm1bSocialMediaDepression(multi_problem.MultiProblem):
     super(Lm1bSocialMediaDepression, self).__init__(was_reversed, was_copy)
     self.task_list.append(lm1b.LanguagemodelLm1b32k())
     self.task_list.append(problems.TwitterDepression())
-    self.task_list.append(problems.RedditDepression())
+    self.task_list.append(reddit.RedditDepression())
 
   @property
   def vocab_type(self):
