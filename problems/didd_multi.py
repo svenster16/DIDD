@@ -29,6 +29,7 @@ from tensor2tensor.data_generators import problem
 from tensor2tensor.data_generators import text_encoder
 from tensor2tensor.data_generators import text_problems
 from tensor2tensor.data_generators import multi_problem_v2
+from tensor2tensor.data_generators import multi_problem
 from tensor2tensor.data_generators import lm1b
 from . import problems
 from . import reddit
@@ -40,7 +41,25 @@ import tensorflow as tf
 
 
 @registry.register_problem
-class Lm1bSocialMediaDepression(multi_problem_v2.MultiProblemV2):
+class Lm1bSocialMediaDepression(multi_problem.MultiProblem):
+  """LM1b and Depression mixed problem class for multitask learning."""
+
+  def __init__(self, was_reversed=False, was_copy=False):
+    super(Lm1bSocialMediaDepression, self).__init__(was_reversed, was_copy)
+    self.task_list.append(lm1b.LanguagemodelLm1b32k())
+    self.task_list.append(problems.TwitterDepression())
+    self.task_list.append(reddit.RedditDepression())
+
+  @property
+  def use_vocab_from_other_problem(self):
+    return lm1b.LanguagemodelLm1b32k()
+
+  @property
+  def vocab_type(self):
+    return text_problems.VocabType.SUBWORD
+
+@registry.register_problem
+class Lm1bSocialMediaDepressionV2(multi_problem_v2.MultiProblemV2):
   """LM1b and Depression mixed problem class for multitask learning."""
 
   def __init__(self, was_reversed=False, was_copy=False):
