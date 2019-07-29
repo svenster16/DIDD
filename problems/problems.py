@@ -144,7 +144,7 @@ class TwitterDepression(text_problems.Text2ClassProblem):
     @property
     def num_training_examples(self):
         """Used when mixing problems - how many examples are in the dataset."""
-        raise 1673863
+        return 1673863
 
     def class_labels(self, data_dir):
         del data_dir
