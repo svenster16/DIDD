@@ -141,7 +141,7 @@ class RedditDepression(text_problems.Text2ClassProblem):
         return True
     @property
     def vocab_filename(self):
-        return lm1b.LanguagemodelLm1b().vocab_filename
+        return lm1b.LanguagemodelLm1b32k().vocab_filename
     @property
     def approx_vocab_size(self):
         return 2 ** 15  # 32768

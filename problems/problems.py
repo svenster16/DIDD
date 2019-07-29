@@ -147,7 +147,7 @@ class TwitterDepression(text_problems.Text2ClassProblem):
 
     @property
     def vocab_filename(self):
-        return lm1b.LanguagemodelLm1b().vocab_filename
+        return lm1b.LanguagemodelLm1b32k().vocab_filename
 
     def generate_samples(self, data_dir, tmp_dir, dataset_split):
         """Generate examples."""

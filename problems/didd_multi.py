@@ -45,7 +45,7 @@ class Lm1bSocialMediaDepression(multi_problem.MultiProblem):
 
   def __init__(self, was_reversed=False, was_copy=False):
     super(Lm1bSocialMediaDepression, self).__init__(was_reversed, was_copy)
-    self.task_list.append(lm1b.LanguagemodelLm1b())
+    self.task_list.append(lm1b.LanguagemodelLm1b32k())
     self.task_list.append(problems.TwitterDepression())
     self.task_list.append(problems.RedditDepression())
 
