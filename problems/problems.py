@@ -30,6 +30,7 @@ from tensor2tensor.data_generators import text_encoder
 from tensor2tensor.data_generators import text_problems
 from tensor2tensor.data_generators import wiki_lm
 from tensor2tensor.data_generators import lm1b
+from tensor2tensor.data_generators import imdb
 
 from tensor2tensor.models import transformer
 from tensor2tensor.utils import registry
@@ -205,3 +206,19 @@ def transformer_tall_tpu():
   hparams = transformer.transformer_tall_finetune_textclass()
   transformer.update_hparams_for_tpu(hparams)
   return hparams
+
+@registry.register_problem
+class SentimentIMDBTest(imdb.SentimentIMDB):
+
+    @property
+    def dataset_splits(self):
+        return [{
+            "split": problem.DatasetSplit.TRAIN,
+            "shards": 10,
+        }, {
+            "split": problem.DatasetSplit.EVAL,
+            "shards": 1,
+        }, {
+            "split": problem.DatasetSplit.TEST,
+            "shards": 1,
+        }]
