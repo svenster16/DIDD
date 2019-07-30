@@ -122,12 +122,7 @@ class RedditDepression(text_problems.Text2ClassProblem):
         }, {
             "split": problem.DatasetSplit.EVAL,
             "shards": 50,
-        }]
-    """
-    @property
-    def dataset_splits(self):
-        Splits of data to produce and number of output shards for each.
-        return [{
+        }, {
             "split": problem.DatasetSplit.TEST,
             "shards": 1,
        }]
@@ -135,7 +130,6 @@ class RedditDepression(text_problems.Text2ClassProblem):
     @property
     def already_shuffled(self):
         return True
-    """
     @property
     def is_generate_per_split(self):
         return True
