@@ -81,6 +81,10 @@ def _test_data_filenames(tmp_dir):
 @registry.register_problem
 class RedditDepression(text_problems.Text2ClassProblem):
     """Twitter depression classification."""
+
+    @property
+    def max_subtoken_length(self):
+        return 22
     @property
     def dataset_splits(self):
         #Splits of data to produce and number of output shards for each.
