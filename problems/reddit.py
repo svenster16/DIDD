@@ -114,12 +114,10 @@ class RedditDepression(text_problems.Text2ClassProblem):
     @property
     def num_classes(self):
         return 2
-    """
     @property
     def num_training_examples(self):
             #Used when mixing problems - how many examples are in the dataset
         return 10958022
-    """
 
     def class_labels(self, data_dir):
         del data_dir
