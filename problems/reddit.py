@@ -105,12 +105,12 @@ class RedditDepression(text_problems.Text2ClassProblem):
     @property
     def is_generate_per_split(self):
         return True
-    #@property
-    #def vocab_filename(self):
-        #return lm1b.LanguagemodelLm1b32k().vocab_filename
+    @property
+    def vocab_filename(self):
+        return lm1b.LanguagemodelLm1b32k().vocab_filename
     @property
     def approx_vocab_size(self):
-        return 2 ** 16
+        return 2 ** 15
     @property
     def num_classes(self):
         return 2
