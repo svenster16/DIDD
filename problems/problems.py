@@ -142,6 +142,11 @@ class TwitterDepression(text_problems.Text2ClassProblem):
     def num_classes(self):
         return 2
 
+    def eval_metrics(self):
+        return [
+            metrics.Metrics.ACC, metrics.Metrics.ROC_AUC, metrics.Metrics.SET_PRECISION, metrics.Metrics.SET_RECALL
+        ]
+
     @property
     def num_training_examples(self):
         """Used when mixing problems - how many examples are in the dataset."""
