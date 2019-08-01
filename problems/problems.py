@@ -135,7 +135,7 @@ class TwitterDepression(text_problems.Text2ClassProblem):
         }]
     @property
     def already_shuffled(self):
-        return True
+        return False
     @property
     def is_generate_per_split(self):
         return True
