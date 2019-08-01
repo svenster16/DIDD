@@ -39,37 +39,6 @@ from google.cloud import storage
 
 import tensorflow as tf
 
-def _original_vocab(tmp_dir):
-  """Returns a set containing the original vocabulary.
-  This is important for comparing with published results.
-  Args:
-    tmp_dir: directory containing dataset.
-  Returns:
-    a set of strings
-  """
-  vocab_url = ("http://download.tensorflow.org/models/LM_LSTM_CNN/"
-               "vocab-2016-09-10.txt")
-  vocab_filename = os.path.basename(vocab_url + ".en")
-  vocab_filepath = os.path.join(tmp_dir, vocab_filename)
-  if not os.path.exists(vocab_filepath):
-    generator_utils.maybe_download(tmp_dir, vocab_filename, vocab_url)
-  return set([
-      text_encoder.native_to_unicode(l.strip())
-      for l in tf.gfile.Open(vocab_filepath)
-  ])
-
-def _replace_oov(original_vocab, line):
-  """Replace out-of-vocab words with "UNK".
-  This maintains compatibility with published results.
-  Args:
-    original_vocab: a set of strings (The standard vocabulary for the dataset)
-    line: a unicode string - a space-delimited sequence of words.
-  Returns:
-    a unicode string - a space-delimited sequence of words.
-  """
-  return u" ".join(
-      [word if word in original_vocab else u"UNK" for word in line.split()])
-
 def download_blob(tmp_dir):
     """Downloads a blob from the bucket."""
     storage_client = storage.Client()
@@ -90,8 +59,6 @@ def download_blob(tmp_dir):
         import zipfile
         with zipfile.ZipFile(zip_filepath, 'r') as zip_ref:
             zip_ref.extractall(tmp_dir)
-
-
 
 @registry.register_problem
 class TwitterDepression(text_problems.Text2ClassProblem):
@@ -166,12 +133,8 @@ class TwitterDepression(text_problems.Text2ClassProblem):
         del data_dir
         return ["Control", "Depression"]
 
-    @property
-    def use_vocab_from_other_problem(self):
-        return lm1b.LanguagemodelLm1b32k()
-
 @registry.register_problem
-class TwitterDepressionAgg20(text_problems.Text2ClassProblem):
+class TwitterDepressionAgg20(TwitterDepression):
     """Twitter depression classification with aggrageate posts."""
     def generate_samples(self, data_dir, tmp_dir, dataset_split):
         """Generate examples."""
