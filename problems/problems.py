@@ -123,7 +123,7 @@ class TwitterDepression(text_problems.Text2ClassProblem):
                             "label": int(label),
                         }
                         """over sampling depression postsquit"""
-                        if (num == 0 or num == 1) and dataset != "test":
+                        if (num == 0 or num == 1) and label and dataset != "test":
                             yield {
                                 "inputs": line,
                                 "label": int(label),
@@ -203,7 +203,7 @@ class TwitterDepressionAgg20(text_problems.Text2ClassProblem):
                                 "label": int(label),
                             }
                             """over sampling depression postsquit"""
-                            if (num == 0 or num == 1) and dataset != "test":
+                            if (num == 0 or num == 1) and label and dataset != "test":
                                 yield {
                                     "inputs": txt,
                                     "label": int(label),
