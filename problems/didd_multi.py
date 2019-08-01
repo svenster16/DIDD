@@ -30,6 +30,7 @@ from tensor2tensor.data_generators import text_encoder
 from tensor2tensor.data_generators import text_problems
 from tensor2tensor.data_generators import multi_problem_v2
 from tensor2tensor.data_generators import multi_problem
+from tensor2tensor.utils import metrics
 from tensor2tensor.data_generators import lm1b
 from . import problems
 from . import reddit
@@ -54,6 +55,20 @@ class Lm1bSocialMediaDepression(multi_problem.MultiProblem):
   @property
   def use_vocab_from_other_problem(self):
     return lm1b.LanguagemodelLm1b32k()
+  def eval_metrics(self):
+    for task in self.task_list:
+      if "summarize" in task.name:
+        return [
+            metrics.Metrics.ACC, metrics.Metrics.NEG_LOG_PERPLEXITY,
+            metrics.Metrics.ROUGE_2_F, metrics.Metrics.ROUGE_L_F
+        ]
+      if "depression" in task.name:
+        return [
+          metrics.Metrics.ACC, metrics.Metrics.ROC_AUC, metrics.Metrics.SET_PRECISION, metrics.Metrics.SET_RECALL
+        ]
+    return [
+        metrics.Metrics.ACC, metrics.Metrics.NEG_LOG_PERPLEXITY
+    ]
 
   @property
   def vocab_type(self):
