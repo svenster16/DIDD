@@ -143,7 +143,7 @@ class TwitterDepression(text_problems.Text2ClassProblem):
         return 2
     def eval_metrics(self):
         return [
-            metrics.Metrics.ACC, metrics.Metrics.ROC_AUC, metrics.Metrics.SET_PRECISION, metrics.Metrics.SET_RECALL
+            metrics.Metrics.ACC, metrics.Metrics.ROC_AUC
         ]
     @property
     def num_training_examples(self):
