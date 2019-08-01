@@ -30,6 +30,7 @@ from tensor2tensor.data_generators import text_encoder
 from tensor2tensor.data_generators import text_problems
 from tensor2tensor.data_generators import wiki_lm
 from tensor2tensor.data_generators import lm1b
+from tensor2tensor.utils import metrics
 from tensor2tensor.data_generators import imdb
 
 from tensor2tensor.models import transformer
