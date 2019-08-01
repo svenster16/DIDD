@@ -137,7 +137,7 @@ class TwitterDepression(text_problems.Text2ClassProblem):
         return True
     @property
     def approx_vocab_size(self):
-        return 2 ** 16  # 32768
+        return 2 ** 16  # 64k
     @property
     def num_classes(self):
         return 2
@@ -155,8 +155,8 @@ class TwitterDepression(text_problems.Text2ClassProblem):
         return ["Control", "Depression"]
 
     @property
-    def vocab_filename(self):
-        return lm1b.LanguagemodelLm1b64k().vocab_filename
+    def use_vocab_from_other_problem(self):
+        return wiki_lm.LanguagemodelEnWiki64k()
 
     def generate_samples(self, data_dir, tmp_dir, dataset_split):
         """Generate examples."""
