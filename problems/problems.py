@@ -32,7 +32,7 @@ from tensor2tensor.data_generators import wiki_lm
 from tensor2tensor.data_generators import lm1b
 from tensor2tensor.utils import metrics
 from tensor2tensor.data_generators import imdb
-
+from random import randrange
 from tensor2tensor.models import transformer
 from tensor2tensor.utils import registry
 from google.cloud import storage
@@ -112,14 +112,22 @@ class TwitterDepression(text_problems.Text2ClassProblem):
             dataset = "test"
         dirs = [(os.path.join(tmp_dir, dataset, "depression"), True), (os.path.join(
             tmp_dir, dataset, "control"), False)]
+
         for d, label in dirs:
             for filename in os.listdir(d):
                 with tf.gfile.Open(os.path.join(d, filename)) as f:
                     for line in f:
+                        num = randrange(3)
                         yield {
                             "inputs": line,
                             "label": int(label),
                         }
+                        """over sampling depression postsquit"""
+                        if (num == 0 or num == 1) and dataset != "test":
+                            yield {
+                                "inputs": line,
+                                "label": int(label),
+                            }
     @property
     def dataset_splits(self):
         """Splits of data to produce and number of output shards for each."""
@@ -160,43 +168,51 @@ class TwitterDepression(text_problems.Text2ClassProblem):
 
     @property
     def use_vocab_from_other_problem(self):
-        return wiki_lm.LanguagemodelEnWiki32k()
+        return lm1b.LanguagemodelLm1b32k()
 
 @registry.register_problem
 class TwitterDepressionAgg20(text_problems.Text2ClassProblem):
     """Twitter depression classification with aggrageate posts."""
-    #NOT DONE YET: will not work because we need to keep each user posts together. We cannot be mixing posts
-    #   between users!!!!!!!!!!
     def generate_samples(self, data_dir, tmp_dir, dataset_split):
-        POST_AGG_COUNT = 20  # number of posts to aggragate together
+        """Generate examples."""
         download_blob(tmp_dir)
         # Generate examples
-        split_files = {
-            problem.DatasetSplit.TRAIN: _train_data_filenames(tmp_dir),
-            problem.DatasetSplit.EVAL: _dev_data_filenames(tmp_dir),
-            problem.DatasetSplit.TEST: _test_data_filenames(tmp_dir),
-        }
-        files = split_files[dataset_split]
-        for filepath, label in files:
-            tf.logging.info("filepath = %s", filepath)
-            count = 0
-            aggtext = ''
-            for line in tf.gfile.Open(filepath):
-                if count == POST_AGG_COUNT:
-                    yield {
-                        "inputs": aggtext,
-                        "label": int(label),
-                    }
+        # original_vocab = _original_vocab(tmp_dir)
+        # txt = _replace_oov(original_vocab, text_encoder.native_to_unicode(line))
+        train = dataset_split == problem.DatasetSplit.TRAIN
+        dev = dataset_split == problem.DatasetSplit.EVAL
+        if train:
+            dataset = "train"
+        elif dev:
+            dataset = "dev"
+        else:
+            dataset = "test"
+        dirs = [(os.path.join(tmp_dir, dataset, "depression"), True), (os.path.join(
+            tmp_dir, dataset, "control"), False)]
+
+        for d, label in dirs:
+            for filename in os.listdir(d):
+                with tf.gfile.Open(os.path.join(d, filename)) as f:
                     count = 0
-                    aggtext = ''
-                    continue
-                aggtext = aggtext + ' ' + line
-                count += 1
-            if aggtext != '':
-                yield {
-                    "inputs": aggtext,
-                    "label": int(label),
-                }
+                    txt = ''
+                    for line in f:
+                        if count == 20:
+                            num = randrange(3)
+                            yield {
+                                "inputs": txt,
+                                "label": int(label),
+                            }
+                            """over sampling depression postsquit"""
+                            if (num == 0 or num == 1) and dataset != "test":
+                                yield {
+                                    "inputs": txt,
+                                    "label": int(label),
+                                }
+                            count = 0
+                            txt = ''
+                            continue
+                        count += 1
+                        txt = txt + ' ' + line
 
 @registry.register_problem
 class LanguagemodelLm1b32kmulti(lm1b.LanguagemodelLm1b32k):
@@ -231,22 +247,22 @@ def transformer_tall_tpu():
   return hparams
 
 @registry.register_hparams
-def transformer_textclass():
+def transformer_textclass_big():
   hparams = transformer.transformer_big()
   hparams.layer_prepostprocess_dropout = 0.1
-  hparams.learning_rate_warmup_steps = 16000
-  hparams.learning_rate_constant = 6.25e-5
+  hparams.learning_rate_warmup_steps = 50
+  hparams.learning_rate_constant = 6.25e-6
   hparams.learning_rate_schedule = ("linear_warmup*constant*linear_decay")
   # Set train steps to learning_rate_decay_steps or less
-  hparams.learning_rate_decay_steps = 50000
+  hparams.learning_rate_decay_steps = 20000
   return hparams
 
 @registry.register_hparams
 def transformer_textclass_base():
   hparams = transformer.transformer_base()
   hparams.layer_prepostprocess_dropout = 0.1
-  hparams.learning_rate_warmup_steps = 1000
-  hparams.learning_rate_constant = 6.25e-5
+  hparams.learning_rate_warmup_steps = 50
+  hparams.learning_rate_constant = 6.25e-6
   hparams.learning_rate_schedule = ("linear_warmup*constant*linear_decay")
   # Set train steps to learning_rate_decay_steps or less
   hparams.learning_rate_decay_steps = 20000
