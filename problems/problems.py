@@ -264,7 +264,7 @@ def transformer_textclass_base():
   hparams.learning_rate_constant = 6.25e-5
   hparams.learning_rate_schedule = ("linear_warmup*constant*linear_decay")
   # Set train steps to learning_rate_decay_steps or less
-  hparams.learning_rate_decay_steps = 10000
+  hparams.learning_rate_decay_steps = 20000
   return hparams
 
 @registry.register_problem
