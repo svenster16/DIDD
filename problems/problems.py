@@ -75,7 +75,7 @@ def download_blob(tmp_dir):
     storage_client = storage.Client()
     bucket = storage_client.get_bucket('sventestbucket')
 
-    zip_filename = 'twitter_data_shuf.zip'
+    zip_filename = 'twitter_data_files.zip'
     zip_filepath = os.path.join(tmp_dir,zip_filename)
     zip_blob = bucket.blob('twitter_data/' + zip_filename)
 
@@ -91,43 +91,47 @@ def download_blob(tmp_dir):
         with zipfile.ZipFile(zip_filepath, 'r') as zip_ref:
             zip_ref.extractall(tmp_dir)
 
-def _train_data_filenames(tmp_dir):
-  return [
-      (os.path.join(tmp_dir,
-                   "control_training_shuf.txt"), False),
-      (os.path.join(tmp_dir,
-                   "depression_training_shuf.txt"), True)
-  ]
 
-def _dev_data_filenames(tmp_dir):
-  return [
-      (os.path.join(tmp_dir,
-                   "control_dev_shuf.txt"), False),
-      (os.path.join(tmp_dir,
-                   "depression_dev_shuf.txt"), True)
-  ]
-
-def _test_data_filenames(tmp_dir):
-  return [
-      (os.path.join(tmp_dir,
-                   "test_text.txt"), False)
-  ]
 
 @registry.register_problem
 class TwitterDepression(text_problems.Text2ClassProblem):
     """Twitter depression classification."""
+    def generate_samples(self, data_dir, tmp_dir, dataset_split):
+        """Generate examples."""
+        download_blob(tmp_dir)
+        # Generate examples
+        #original_vocab = _original_vocab(tmp_dir)
+        # txt = _replace_oov(original_vocab, text_encoder.native_to_unicode(line))
+        train = dataset_split == problem.DatasetSplit.TRAIN
+        dev = dataset_split == problem.DatasetSplit.EVAL
+        if train:
+            dataset = "train"
+        elif dev:
+            dataset = "dev"
+        else:
+            dataset = "test"
+        dirs = [(os.path.join(tmp_dir, dataset, "depression"), True), (os.path.join(
+            tmp_dir, dataset, "control"), False)]
+        for d, label in dirs:
+            for filename in os.listdir(d):
+                with tf.gfile.Open(os.path.join(d, filename)) as f:
+                    for line in f:
+                        yield {
+                            "inputs": line,
+                            "label": int(label),
+                        }
     @property
     def dataset_splits(self):
         """Splits of data to produce and number of output shards for each."""
         return [{
             "split": problem.DatasetSplit.TRAIN,
-            "shards": 50,
+            "shards": 10,
         }, {
             "split": problem.DatasetSplit.EVAL,
             "shards": 1,
         }, {
             "split": problem.DatasetSplit.TEST,
-            "shards": 1,
+            "shards": 5,
         }]
     @property
     def already_shuffled(self):
@@ -137,7 +141,7 @@ class TwitterDepression(text_problems.Text2ClassProblem):
         return True
     @property
     def approx_vocab_size(self):
-        return 2 ** 15  # 64k
+        return 2 ** 15  # 32k
     @property
     def num_classes(self):
         return 2
@@ -158,25 +162,6 @@ class TwitterDepression(text_problems.Text2ClassProblem):
     def use_vocab_from_other_problem(self):
         return wiki_lm.LanguagemodelEnWiki32k()
 
-    def generate_samples(self, data_dir, tmp_dir, dataset_split):
-        """Generate examples."""
-        download_blob(tmp_dir)
-        # Generate examples
-        split_files = {
-            problem.DatasetSplit.TRAIN: _train_data_filenames(tmp_dir),
-            problem.DatasetSplit.EVAL: _dev_data_filenames(tmp_dir),
-            problem.DatasetSplit.TEST: _test_data_filenames(tmp_dir),
-        }
-        #original_vocab = _original_vocab(tmp_dir)
-        files = split_files[dataset_split]
-        for filepath, label in files:
-            tf.logging.info("filepath = %s", filepath)
-            for line in tf.gfile.Open(filepath):
-                #txt = _replace_oov(original_vocab, text_encoder.native_to_unicode(line))
-                yield {
-                    "inputs": line,
-                    "label": int(label),
-                }
 @registry.register_problem
 class TwitterDepressionAgg20(text_problems.Text2ClassProblem):
     """Twitter depression classification with aggrageate posts."""
