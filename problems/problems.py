@@ -74,23 +74,21 @@ def download_blob(tmp_dir):
     """Downloads a blob from the bucket."""
     storage_client = storage.Client()
     bucket = storage_client.get_bucket('sventestbucket')
-    corpus_filename = 'twitterData.zip'
-    vocab_filename = 'vocab.depression_twitter.32768.subwords'
-    corpus_filepath = os.path.join(tmp_dir,corpus_filename)
-    vocab_filepath = os.path.join(tmp_dir,vocab_filename)
-    testset_filename = 'test_text.txt'
-    testset_filepath = os.path.join(tmp_dir,testset_filename)
-    blob = bucket.blob(corpus_filename)
-    blob2 = bucket.blob(vocab_filename)
-    blob3 = bucket.blob('twitter_test_data/'+testset_filename)
-    if not os.path.exists(vocab_filepath):
-        blob2.download_to_filename(vocab_filepath)
-    if not os.path.exists(testset_filepath):
-        blob3.download_to_filename(testset_filepath)
-    if not os.path.exists(corpus_filepath):
-        blob.download_to_filename(corpus_filepath)
+
+    zip_filename = 'twitter_data_shuf.zip'
+    zip_filepath = os.path.join(tmp_dir,zip_filename)
+    zip_blob = bucket.blob('twitter_data/' + zip_filename)
+
+    test_filename = 'test_text.txt'
+    test_filepath = os.path.join(tmp_dir,test_filename)
+    test_blob = bucket.blob('twitter_data/'+test_filename)
+
+    if not os.path.exists(test_filepath):
+        test_blob.download_to_filename(test_filepath)
+    if not os.path.exists(zip_filepath):
+        zip_blob.download_to_filename(zip_filepath)
         import zipfile
-        with zipfile.ZipFile(corpus_filepath, 'r') as zip_ref:
+        with zipfile.ZipFile(zip_filepath, 'r') as zip_ref:
             zip_ref.extractall(tmp_dir)
 
 def _train_data_filenames(tmp_dir):
@@ -123,7 +121,7 @@ class TwitterDepression(text_problems.Text2ClassProblem):
         """Splits of data to produce and number of output shards for each."""
         return [{
             "split": problem.DatasetSplit.TRAIN,
-            "shards": 80,
+            "shards": 50,
         }, {
             "split": problem.DatasetSplit.EVAL,
             "shards": 1,
@@ -132,22 +130,21 @@ class TwitterDepression(text_problems.Text2ClassProblem):
             "shards": 1,
         }]
     @property
+    def already_shuffled(self):
+        return True
+    @property
     def is_generate_per_split(self):
         return True
-
     @property
     def approx_vocab_size(self):
-        return 2 ** 15  # 32768
-
+        return 2 ** 16  # 32768
     @property
     def num_classes(self):
         return 2
-
     def eval_metrics(self):
         return [
             metrics.Metrics.ACC, metrics.Metrics.ROC_AUC, metrics.Metrics.SET_PRECISION, metrics.Metrics.SET_RECALL
         ]
-
     @property
     def num_training_examples(self):
         """Used when mixing problems - how many examples are in the dataset."""
@@ -159,7 +156,7 @@ class TwitterDepression(text_problems.Text2ClassProblem):
 
     @property
     def vocab_filename(self):
-        return lm1b.LanguagemodelLm1b32k().vocab_filename
+        return lm1b.LanguagemodelLm1b64k().vocab_filename
 
     def generate_samples(self, data_dir, tmp_dir, dataset_split):
         """Generate examples."""
@@ -170,16 +167,17 @@ class TwitterDepression(text_problems.Text2ClassProblem):
             problem.DatasetSplit.EVAL: _dev_data_filenames(tmp_dir),
             problem.DatasetSplit.TEST: _test_data_filenames(tmp_dir),
         }
-        original_vocab = _original_vocab(tmp_dir)
+        #original_vocab = _original_vocab(tmp_dir)
         files = split_files[dataset_split]
         for filepath, label in files:
             tf.logging.info("filepath = %s", filepath)
             for line in tf.gfile.Open(filepath):
-                txt = _replace_oov(original_vocab, text_encoder.native_to_unicode(line))
+                #txt = _replace_oov(original_vocab, text_encoder.native_to_unicode(line))
                 yield {
-                    "inputs": txt,
+                    "inputs": line,
                     "label": int(label),
                 }
+
 @registry.register_problem
 class LanguagemodelLm1b32kmulti(lm1b.LanguagemodelLm1b32k):
     @property
@@ -198,7 +196,6 @@ class TwitterDepressionCharacters(TwitterDepression):
 @registry.register_problem
 class MultiTwitterWikiLMSharedVocab64k(TwitterDepression):
   """MultiNLI classification problems with the Wiki vocabulary."""
-
   @property
   def use_vocab_from_other_problem(self):
     return wiki_lm.LanguagemodelEnWiki64k()
