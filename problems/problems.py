@@ -210,6 +210,17 @@ def transformer_tall_tpu():
   transformer.update_hparams_for_tpu(hparams)
   return hparams
 
+@registry.register_hparams
+def transformer_textclass():
+  hparams = transformer.transformer_big()
+  hparams.layer_prepostprocess_dropout = 0.1
+  hparams.learning_rate_warmup_steps = 16000
+  hparams.learning_rate_constant = 6.25e-5
+  hparams.learning_rate_schedule = ("linear_warmup*constant*linear_decay")
+  # Set train steps to learning_rate_decay_steps or less
+  hparams.learning_rate_decay_steps = 50000
+  return hparams
+
 @registry.register_problem
 class SentimentIMDBTest(imdb.SentimentIMDB):
 
