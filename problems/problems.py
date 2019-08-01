@@ -63,6 +63,9 @@ def download_blob(tmp_dir):
 @registry.register_problem
 class TwitterDepression(text_problems.Text2ClassProblem):
     """Twitter depression classification."""
+    @property
+    def max_subtoken_length(self):
+        return 18
     def generate_samples(self, data_dir, tmp_dir, dataset_split):
         """Generate examples."""
         download_blob(tmp_dir)
