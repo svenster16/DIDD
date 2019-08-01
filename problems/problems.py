@@ -94,17 +94,17 @@ def download_blob(tmp_dir):
 def _train_data_filenames(tmp_dir):
   return [
       (os.path.join(tmp_dir,
-                   "control_training.txt"), False),
+                   "control_training_shuf.txt"), False),
       (os.path.join(tmp_dir,
-                   "depression_training.txt"), True)
+                   "depression_training_shuf.txt"), True)
   ]
 
 def _dev_data_filenames(tmp_dir):
   return [
       (os.path.join(tmp_dir,
-                   "control_dev.txt"), False),
+                   "control_dev_shuf.txt"), False),
       (os.path.join(tmp_dir,
-                   "depression_dev.txt"), True)
+                   "depression_dev_shuf.txt"), True)
   ]
 
 def _test_data_filenames(tmp_dir):
@@ -137,7 +137,7 @@ class TwitterDepression(text_problems.Text2ClassProblem):
         return True
     @property
     def approx_vocab_size(self):
-        return 2 ** 16  # 64k
+        return 2 ** 15  # 64k
     @property
     def num_classes(self):
         return 2
@@ -156,7 +156,7 @@ class TwitterDepression(text_problems.Text2ClassProblem):
 
     @property
     def use_vocab_from_other_problem(self):
-        return wiki_lm.LanguagemodelEnWiki64k()
+        return wiki_lm.LanguagemodelEnWiki32k()
 
     def generate_samples(self, data_dir, tmp_dir, dataset_split):
         """Generate examples."""
