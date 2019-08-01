@@ -177,6 +177,41 @@ class TwitterDepression(text_problems.Text2ClassProblem):
                     "inputs": line,
                     "label": int(label),
                 }
+@registry.register_problem
+class TwitterDepressionAgg20(text_problems.Text2ClassProblem):
+    """Twitter depression classification with aggrageate posts."""
+    #NOT DONE YET: will not work because we need to keep each user posts together. We cannot be mixing posts
+    #   between users!!!!!!!!!!
+    def generate_samples(self, data_dir, tmp_dir, dataset_split):
+        POST_AGG_COUNT = 20  # number of posts to aggragate together
+        download_blob(tmp_dir)
+        # Generate examples
+        split_files = {
+            problem.DatasetSplit.TRAIN: _train_data_filenames(tmp_dir),
+            problem.DatasetSplit.EVAL: _dev_data_filenames(tmp_dir),
+            problem.DatasetSplit.TEST: _test_data_filenames(tmp_dir),
+        }
+        files = split_files[dataset_split]
+        for filepath, label in files:
+            tf.logging.info("filepath = %s", filepath)
+            count = 0
+            aggtext = ''
+            for line in tf.gfile.Open(filepath):
+                if count == POST_AGG_COUNT:
+                    yield {
+                        "inputs": aggtext,
+                        "label": int(label),
+                    }
+                    count = 0
+                    aggtext = ''
+                    continue
+                aggtext = aggtext + ' ' + line
+                count += 1
+            if aggtext != '':
+                yield {
+                    "inputs": aggtext,
+                    "label": int(label),
+                }
 
 @registry.register_problem
 class LanguagemodelLm1b32kmulti(lm1b.LanguagemodelLm1b32k):
