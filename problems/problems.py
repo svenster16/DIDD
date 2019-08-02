@@ -112,9 +112,6 @@ class TwitterDepression(text_problems.Text2ClassProblem):
             "shards": 5,
         }]
     @property
-    def already_shuffled(self):
-        return False
-    @property
     def is_generate_per_split(self):
         return True
     @property
@@ -138,6 +135,9 @@ class TwitterDepression(text_problems.Text2ClassProblem):
 
 @registry.register_problem
 class TwitterDepressionAgg20(TwitterDepression):
+    @property
+    def aggragate_number(self):
+        return 20
     """Twitter depression classification with aggrageate posts."""
     def generate_samples(self, data_dir, tmp_dir, dataset_split):
         """Generate examples."""
@@ -162,7 +162,7 @@ class TwitterDepressionAgg20(TwitterDepression):
                     count = 0
                     txt = ''
                     for line in f:
-                        if count == 20:
+                        if count == self.aggragate_number:
                             num = randrange(3)
                             yield {
                                 "inputs": txt,
@@ -179,7 +179,6 @@ class TwitterDepressionAgg20(TwitterDepression):
                             continue
                         count += 1
                         txt = txt + ' ' + line
-
 @registry.register_problem
 class LanguagemodelLm1b32kmulti(lm1b.LanguagemodelLm1b32k):
     @property
