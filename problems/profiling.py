@@ -186,10 +186,10 @@ class AgeTwitter(AgePAN):
 @registry.register_hparams
 def text_cnn_tiny():
     hparams = text_cnn.text_cnn_base()
+    hparams.batch_size = 16
     hparams.num_hidden_layers = 1
-    hparams.hidden_size = 64
-    hparams.filter_size = 256
-    hparams.num_heads = 2
+    hparams.num_filters = 64
+    hparams.ouput_dropout = 0.6
     return hparams
 
 @registry.register_hparams
