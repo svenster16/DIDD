@@ -156,3 +156,14 @@ def transformer_extra_tiny():
     hparams.filter_size = 256
     hparams.num_heads = 2
     return hparams
+
+@registry.register_hparams
+def transformer_extra_tiny_textclass():
+    hparams = transformer_extra_tiny()
+    hparams.layer_prepostprocess_dropout = 0.1
+    hparams.learning_rate_warmup_steps = 2000
+    hparams.learning_rate_constant = 4e-7
+    hparams.learning_rate_schedule = ("linear_warmup*constant*linear_decay")
+    # Set train steps to learning_rate_decay_steps or less
+    hparams.learning_rate_decay_steps = 10000
+    return hparams
