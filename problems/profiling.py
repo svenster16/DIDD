@@ -88,10 +88,10 @@ class AgePAN(text_problems.Text2ClassProblem):
         """Splits of data to produce and number of output shards for each."""
         return [{
             "split": problem.DatasetSplit.TRAIN,
-            "shards": 10,
+            "shards": 12,
         }, {
             "split": problem.DatasetSplit.EVAL,
-            "shards": 1,
+            "shards": 4,
         }]
     @property
     def is_generate_per_split(self):
