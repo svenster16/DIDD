@@ -42,11 +42,11 @@ import tensorflow as tf
 def download_blob(tmp_dir):
     """Downloads a blob from the bucket."""
     storage_client = storage.Client()
-    bucket = storage_client.get_bucket('sventestbucket')
+    bucket = storage_client.get_bucket('svenbucky')
 
     zip_filename = 'PAN.zip'
     zip_filepath = os.path.join(tmp_dir,zip_filename)
-    zip_blob = bucket.blob('PAN_data/' + zip_filename)
+    zip_blob = bucket.blob(zip_filename)
 
     if not os.path.exists(zip_filepath):
         zip_blob.download_to_filename(zip_filepath)
@@ -60,14 +60,12 @@ class AgePAN(text_problems.Text2ClassProblem):
     @property
     def max_subtoken_length(self):
         return 18
+
     def generate_samples(self, data_dir, tmp_dir, dataset_split):
         """Generate examples."""
         download_blob(tmp_dir)
-
-        train = dataset_split == problem.DatasetSplit.TRAIN
-        dataset = "train" if train else "test"
-
         users = {}
+        dataset = "train" if dataset_split == problem.DatasetSplit.TRAIN else "test"
         with open(os.path.join(tmp_dir, dataset, 'truth.txt'), 'r') as fout:
             for line in fout:
                 line = line.strip().split(':::')
@@ -77,10 +75,10 @@ class AgePAN(text_problems.Text2ClassProblem):
             userid = os.path.splitext(file)
             try:
                 root = ET.parse(os.path.join(tmp_dir, dataset, file))
-                female = True if users[userid]["gender"] == "F" else False
+                female = True if users[userid[0]]["gender"].strip() == "F" else False
                 for twt in root.iter('document'):
                     yield {
-                        "inputs": twt,
+                        "input": twt.text.strip(),
                         "label": int(female),
                     }
             except ET.ParseError:
