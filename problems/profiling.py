@@ -152,6 +152,15 @@ def text_cnn_tiny():
 def transformer_extra_tiny():
     hparams = transformer.transformer_tiny()
     hparams.num_hidden_layers = 1
+    hparams.hidden_size = 32
+    hparams.filter_size = 128
+    hparams.num_heads = 2
+    return hparams
+@registry.register_hparams
+def transformer_extra_tiny_agg():
+    hparams = transformer.transformer_tiny()
+    hparams.batch_size = 8
+    hparams.num_hidden_layers = 1
     hparams.hidden_size = 64
     hparams.filter_size = 256
     hparams.num_heads = 2
