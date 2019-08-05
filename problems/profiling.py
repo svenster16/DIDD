@@ -109,3 +109,31 @@ class AgePAN(text_problems.Text2ClassProblem):
     def class_labels(self, data_dir):
         del data_dir
         return ["male", "female"]
+
+@registry.register_problem
+class AgeAggPAN(AgePAN):
+    def generate_samples(self, data_dir, tmp_dir, dataset_split):
+        """Generate examples."""
+        download_blob(tmp_dir)
+        users = {}
+        dataset = "train" if dataset_split == problem.DatasetSplit.TRAIN else "test"
+        with open(os.path.join(tmp_dir, dataset, 'truth.txt'), 'r') as fout:
+            for line in fout:
+                line = line.strip().split(':::')
+                users[line[0]] = {"gender": line[1], "age": line[2], "extroverted": line[3], "stable": line[4],
+                                  "agreeable": line[5], "conscientious": line[6], "open": line[7]}
+        for file in os.listdir(os.path.join(tmp_dir, dataset)):
+            userid = os.path.splitext(file)
+
+            try:
+                aggtext = ''
+                root = ET.parse(os.path.join(tmp_dir, dataset, file))
+                female = True if users[userid[0]]["gender"].strip() == "F" else False
+                for twt in root.iter('document'):
+                    aggtext = aggtext + ' <EOP> ' + twt.text.strip()
+                yield {
+                    "input": aggtext,
+                    "label": int(female),
+                }
+            except ET.ParseError:
+                pass
