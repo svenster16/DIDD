@@ -78,7 +78,7 @@ class AgePAN(text_problems.Text2ClassProblem):
                 female = True if users[userid[0]]["gender"].strip() == "F" else False
                 for twt in root.iter('document'):
                     yield {
-                        "input": twt.text.strip(),
+                        "inputs": twt.text.strip(),
                         "label": int(female),
                     }
             except ET.ParseError:
@@ -132,7 +132,7 @@ class AgeAggPAN(AgePAN):
                 for twt in root.iter('document'):
                     aggtext = aggtext + ' <EOP> ' + twt.text.strip()
                 yield {
-                    "input": aggtext,
+                    "inputs": aggtext,
                     "label": int(female),
                 }
             except ET.ParseError:
