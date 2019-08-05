@@ -89,7 +89,7 @@ class AgePAN(text_problems.Text2ClassProblem):
         """Splits of data to produce and number of output shards for each."""
         return [{
             "split": problem.DatasetSplit.TRAIN,
-            "shards": 4,
+            "shards": 3,
         }, {
             "split": problem.DatasetSplit.EVAL,
             "shards": 1,
