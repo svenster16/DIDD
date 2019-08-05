@@ -178,6 +178,10 @@ class AgeTwitter(AgePAN):
     def class_labels(self, data_dir):
         del data_dir
         return ["18-24", "25-34", "35-49", "50-XX"]
+    def eval_metrics(self):
+        return [
+            metrics.Metrics.ACC
+        ]
 
 @registry.register_hparams
 def text_cnn_tiny():
