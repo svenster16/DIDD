@@ -139,6 +139,46 @@ class AgeAggPAN(AgePAN):
             except ET.ParseError:
                 pass
 
+@registry.register_problem
+class AgeTwitter(AgePAN):
+    def generate_samples(self, data_dir, tmp_dir, dataset_split):
+        """Generate examples."""
+        download_blob(tmp_dir)
+        users = {}
+        dataset = "train" if dataset_split == problem.DatasetSplit.TRAIN else "test"
+        with open(os.path.join(tmp_dir, dataset, 'truth.txt'), 'r') as fout:
+            for line in fout:
+                line = line.strip().split(':::')
+                users[line[0]] = {"gender": line[1], "age": line[2], "extroverted": line[3], "stable": line[4],
+                                  "agreeable": line[5], "conscientious": line[6], "open": line[7]}
+        for file in os.listdir(os.path.join(tmp_dir, dataset)):
+            userid = os.path.splitext(file)
+            try:
+                root = ET.parse(os.path.join(tmp_dir, dataset, file))
+                age = users[userid[0]]["age"].strip()
+                if age == "18-24":
+                    label = 0
+                elif age == "25-34":
+                    label = 1
+                elif age == "35-49":
+                    label = 2
+                else:
+                    label = 3
+                for twt in root.iter('document'):
+                    yield {
+                        "inputs": twt.text.strip(),
+                        "label": label,
+                    }
+            except ET.ParseError:
+                pass
+
+    @property
+    def num_classes(self):
+        return 4
+    def class_labels(self, data_dir):
+        del data_dir
+        return ["18-24", "25-34", "35-49", "50-XX"]
+
 @registry.register_hparams
 def text_cnn_tiny():
     hparams = text_cnn.text_cnn_base()
