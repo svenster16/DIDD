@@ -26,6 +26,7 @@ import tarfile
 from six.moves import range
 from tensor2tensor.data_generators import generator_utils
 from tensor2tensor.data_generators import problem
+from tensor2tensor.models import text_cnn
 from tensor2tensor.data_generators import text_encoder
 from tensor2tensor.data_generators import text_problems
 from tensor2tensor.data_generators import wiki_lm
@@ -137,3 +138,21 @@ class AgeAggPAN(AgePAN):
                 }
             except ET.ParseError:
                 pass
+
+@registry.register_hparams
+def text_cnn_tiny():
+    hparams = text_cnn.text_cnn_base()
+    hparams.num_hidden_layers = 1
+    hparams.hidden_size = 64
+    hparams.filter_size = 256
+    hparams.num_heads = 2
+    return hparams
+
+@registry.register_hparams
+def transformer_extra_tiny():
+    hparams = transformer.transformer_tiny()
+    hparams.num_hidden_layers = 1
+    hparams.hidden_size = 64
+    hparams.filter_size = 256
+    hparams.num_heads = 2
+    return hparams
