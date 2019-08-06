@@ -44,16 +44,10 @@ def download_blob(tmp_dir):
     storage_client = storage.Client()
     bucket = storage_client.get_bucket('sventestbucket')
 
-    zip_filename = 'twitter_data_files.zip'
+    zip_filename = 'twitter_depression_data.zip'
     zip_filepath = os.path.join(tmp_dir,zip_filename)
     zip_blob = bucket.blob('twitter_data/' + zip_filename)
 
-    test_filename = 'test_text.txt'
-    test_filepath = os.path.join(tmp_dir,test_filename)
-    test_blob = bucket.blob('twitter_data/'+test_filename)
-
-    if not os.path.exists(test_filepath):
-        test_blob.download_to_filename(test_filepath)
     if not os.path.exists(zip_filepath):
         zip_blob.download_to_filename(zip_filepath)
         import zipfile
@@ -80,7 +74,7 @@ class TwitterDepression(text_problems.Text2ClassProblem):
             dataset = "dev"
         else:
             dataset = "test"
-        dirs = [(os.path.join(tmp_dir, dataset, "depression"), True), (os.path.join(
+        dirs = [(os.path.join(tmp_dir,"twitter_depression_data", dataset, "depression"), True), (os.path.join(
             tmp_dir, dataset, "control"), False)]
 
         for d, label in dirs:
@@ -107,9 +101,6 @@ class TwitterDepression(text_problems.Text2ClassProblem):
         }, {
             "split": problem.DatasetSplit.EVAL,
             "shards": 1,
-        }, {
-            "split": problem.DatasetSplit.TEST,
-            "shards": 5,
         }]
     @property
     def is_generate_per_split(self):
@@ -124,11 +115,6 @@ class TwitterDepression(text_problems.Text2ClassProblem):
         return [
             metrics.Metrics.ACC, metrics.Metrics.ROC_AUC
         ]
-    @property
-    def num_training_examples(self):
-        """Used when mixing problems - how many examples are in the dataset."""
-        return 1673863
-
     def class_labels(self, data_dir):
         del data_dir
         return ["Control", "Depression"]
