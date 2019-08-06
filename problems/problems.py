@@ -180,6 +180,14 @@ class TwitterDepressionAgg20(TwitterDepression):
                         count += 1
                         txt = txt + ' ' + line
 @registry.register_problem
+class TwitterDepressionCharactersAgg20(TwitterDepressionAgg20):
+    @property
+    def vocab_type(self):
+        return text_problems.VocabType.CHARACTER
+
+    def global_task_id(self):
+        return problem.TaskID.EN_CHR_SENT
+@registry.register_problem
 class LanguagemodelLm1b32kmulti(lm1b.LanguagemodelLm1b32k):
     @property
     def num_training_examples(self):
