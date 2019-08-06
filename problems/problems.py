@@ -75,7 +75,7 @@ class TwitterDepression(text_problems.Text2ClassProblem):
         else:
             dataset = "test"
         dirs = [(os.path.join(tmp_dir,"twitter_depression_data", dataset, "depression"), True), (os.path.join(
-            tmp_dir, dataset, "control"), False)]
+            tmp_dir,"twitter_depression_data",dataset, "control"), False)]
 
         for d, label in dirs:
             for filename in os.listdir(d):
