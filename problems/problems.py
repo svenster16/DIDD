@@ -121,10 +121,9 @@ class TwitterDepression(text_problems.Text2ClassProblem):
 
 @registry.register_problem
 class TwitterDepressionVanilla(TwitterDepression):
+    """
     def generate_samples(self, data_dir, tmp_dir, dataset_split):
-        """Generate examples."""
         download_blob(tmp_dir)
-        # Generate examples
         train = dataset_split == problem.DatasetSplit.TRAIN
         dataset = "test"
 
@@ -138,6 +137,19 @@ class TwitterDepressionVanilla(TwitterDepression):
                             "inputs": line,
                             "label": int(label),
                         }
+    """
+
+    def generate_samples(self, data_dir, tmp_dir, dataset_split):
+        download_blob(tmp_dir)
+        train = dataset_split == problem.DatasetSplit.TRAIN
+        dataset = "test"
+        filepath = os.path.join(tmp_dir, "twitter_depression_data", dataset, 'test_text.txt')
+        with tf.gfile.Open(filepath) as f:
+            for line in f:
+                yield {
+                    "inputs": line,
+                    "label": 0,
+                }
 
     @property
     def dataset_splits(self):
