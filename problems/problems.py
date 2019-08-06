@@ -120,7 +120,26 @@ class TwitterDepression(text_problems.Text2ClassProblem):
         return ["Control", "Depression"]
 
 @registry.register_problem
-class TwitterDepressionAgg20(TwitterDepression):
+class TwitterDepressionVanilla(TwitterDepression):
+    def generate_samples(self, data_dir, tmp_dir, dataset_split):
+        """Generate examples."""
+        download_blob(tmp_dir)
+        # Generate examples
+        train = dataset_split == problem.DatasetSplit.TRAIN
+        dataset = "train" if train else "dev"
+        dirs = [(os.path.join(tmp_dir,"twitter_depression_data", dataset, "depression"), True), (os.path.join(
+            tmp_dir,"twitter_depression_data",dataset, "control"), False)]
+        for d, label in dirs:
+            for filename in os.listdir(d):
+                with tf.gfile.Open(os.path.join(d, filename)) as f:
+                    for line in f:
+                        yield {
+                            "inputs": line,
+                            "label": int(label),
+                        }
+
+@registry.register_problem
+class TwitterDepressionAgg20Vanilla(TwitterDepression):
     @property
     def aggragate_number(self):
         return 20
@@ -132,13 +151,7 @@ class TwitterDepressionAgg20(TwitterDepression):
         # original_vocab = _original_vocab(tmp_dir)
         # txt = _replace_oov(original_vocab, text_encoder.native_to_unicode(line))
         train = dataset_split == problem.DatasetSplit.TRAIN
-        dev = dataset_split == problem.DatasetSplit.EVAL
-        if train:
-            dataset = "train"
-        elif dev:
-            dataset = "dev"
-        else:
-            dataset = "test"
+        dataset = "train" if train else "dev"
         dirs = [(os.path.join(tmp_dir, dataset, "depression"), True), (os.path.join(
             tmp_dir, dataset, "control"), False)]
 
@@ -149,24 +162,17 @@ class TwitterDepressionAgg20(TwitterDepression):
                     txt = ''
                     for line in f:
                         if count == self.aggragate_number:
-                            num = randrange(3)
                             yield {
                                 "inputs": txt,
                                 "label": int(label),
                             }
-                            """over sampling depression postsquit"""
-                            if (num == 0 or num == 1) and label and dataset != "test":
-                                yield {
-                                    "inputs": txt,
-                                    "label": int(label),
-                                }
                             count = 0
                             txt = ''
                             continue
                         count += 1
                         txt = txt + ' ' + line
 @registry.register_problem
-class TwitterDepressionCharactersAgg20(TwitterDepressionAgg20):
+class TwitterDepressionCharactersAgg20(TwitterDepressionAgg20Vanilla):
     @property
     def vocab_type(self):
         return text_problems.VocabType.CHARACTER
