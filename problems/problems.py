@@ -152,9 +152,8 @@ class TwitterDepressionAgg20Vanilla(TwitterDepression):
         # txt = _replace_oov(original_vocab, text_encoder.native_to_unicode(line))
         train = dataset_split == problem.DatasetSplit.TRAIN
         dataset = "train" if train else "dev"
-        dirs = [(os.path.join(tmp_dir, dataset, "depression"), True), (os.path.join(
-            tmp_dir, dataset, "control"), False)]
-
+        dirs = [(os.path.join(tmp_dir, "twitter_depression_data", dataset, "depression"), True), (os.path.join(
+            tmp_dir, "twitter_depression_data", dataset, "control"), False)]
         for d, label in dirs:
             for filename in os.listdir(d):
                 with tf.gfile.Open(os.path.join(d, filename)) as f:
