@@ -126,7 +126,8 @@ class TwitterDepressionVanilla(TwitterDepression):
         download_blob(tmp_dir)
         # Generate examples
         train = dataset_split == problem.DatasetSplit.TRAIN
-        dataset = "train" if train else "dev"
+        dataset = "test"
+
         dirs = [(os.path.join(tmp_dir,"twitter_depression_data", dataset, "depression"), True), (os.path.join(
             tmp_dir,"twitter_depression_data",dataset, "control"), False)]
         for d, label in dirs:
@@ -137,6 +138,18 @@ class TwitterDepressionVanilla(TwitterDepression):
                             "inputs": line,
                             "label": int(label),
                         }
+
+    @property
+    def dataset_splits(self):
+        """Splits of data to produce and number of output shards for each."""
+        return [{
+            "split": problem.DatasetSplit.TEST,
+            "shards": 1,
+        }]
+
+    @property
+    def already_shuffled(self):
+        return True
 
 @registry.register_problem
 class TwitterDepressionAgg20Vanilla(TwitterDepression):
