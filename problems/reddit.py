@@ -54,7 +54,6 @@ def download_blob(tmp_dir):
 @registry.register_problem
 class RedditDepression(text_problems.Text2ClassProblem):
     """Twitter depression classification."""
-
     @property
     def max_subtoken_length(self):
         return 18
