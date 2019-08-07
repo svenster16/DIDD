@@ -288,6 +288,17 @@ def transformer_textclass_base():
   hparams.learning_rate_decay_steps = 20000
   return hparams
 
+@registry.register_hparams
+def transformer_tpu_td():
+  """
+  HParams for Transformer model on TPU and
+  finetuned for twitter depression (td) classification.
+  """
+  hparams = transformer.transformer_base()
+  hparams.learning_rate = 0.025
+  transformer.update_hparams_for_tpu(hparams)
+  return hparams
+
 @registry.register_problem
 class SentimentIMDBTest(imdb.SentimentIMDB):
 
