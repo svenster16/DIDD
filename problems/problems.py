@@ -168,7 +168,6 @@ class TwitterDepressionAgg20Vanilla(TwitterDepression):
     @property
     def aggragate_number(self):
         return 20
-    """
     def generate_samples(self, data_dir, tmp_dir, dataset_split):
         download_blob(tmp_dir)
         # Generate examples
@@ -176,8 +175,8 @@ class TwitterDepressionAgg20Vanilla(TwitterDepression):
         # txt = _replace_oov(original_vocab, text_encoder.native_to_unicode(line))
         train = dataset_split == problem.DatasetSplit.TRAIN
         dataset = "train" if train else "dev"
-        dirs = [(os.path.join(tmp_dir, "twitter_depression_data", dataset, "depression"), True), (os.path.join(
-            tmp_dir, "twitter_depression_data", dataset, "control"), False)]
+        dirs = [(os.path.join(tmp_dir, "twitter_final_depression_data", dataset, "depression"), True), (os.path.join(
+            tmp_dir, "twitter_final_depression_data", dataset, "control"), False)]
         for d, label in dirs:
             for filename in os.listdir(d):
                 with tf.gfile.Open(os.path.join(d, filename)) as f:
@@ -214,10 +213,10 @@ class TwitterDepressionAgg20Vanilla(TwitterDepression):
                     continue
                 count += 1
                 agg = agg + ' ' + line
-
+    """
+    """
     @property
     def dataset_splits(self):
-        """Splits of data to produce and number of output shards for each."""
         return [{
             "split": problem.DatasetSplit.TEST,
             "shards": 1,
@@ -226,6 +225,7 @@ class TwitterDepressionAgg20Vanilla(TwitterDepression):
     @property
     def already_shuffled(self):
         return True
+    """
 @registry.register_problem
 class TwitterDepressionCharactersAgg20(TwitterDepressionAgg20Vanilla):
     @property
