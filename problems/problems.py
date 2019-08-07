@@ -44,9 +44,9 @@ def download_blob(tmp_dir):
     storage_client = storage.Client()
     bucket = storage_client.get_bucket('sventestbucket')
 
-    zip_filename = 'twitter_depression_data.zip'
+    zip_filename = 'twitter_final_depression_data.zip'
     zip_filepath = os.path.join(tmp_dir,zip_filename)
-    zip_blob = bucket.blob('twitter_data/' + zip_filename)
+    zip_blob = bucket.blob('data/' + zip_filename)
 
     if not os.path.exists(zip_filepath):
         zip_blob.download_to_filename(zip_filepath)
@@ -121,14 +121,13 @@ class TwitterDepression(text_problems.Text2ClassProblem):
 
 @registry.register_problem
 class TwitterDepressionVanilla(TwitterDepression):
-    """
+
     def generate_samples(self, data_dir, tmp_dir, dataset_split):
         download_blob(tmp_dir)
         train = dataset_split == problem.DatasetSplit.TRAIN
-        dataset = "test"
-
-        dirs = [(os.path.join(tmp_dir,"twitter_depression_data", dataset, "depression"), True), (os.path.join(
-            tmp_dir,"twitter_depression_data",dataset, "control"), False)]
+        dataset = "train" if train else "dev"
+        dirs = [(os.path.join(tmp_dir,"twitter_final_depression_data", dataset, "depression"), True), (os.path.join(
+            tmp_dir,"twitter_final_depression_data",dataset, "control"), False)]
         for d, label in dirs:
             for filename in os.listdir(d):
                 with tf.gfile.Open(os.path.join(d, filename)) as f:
@@ -150,10 +149,10 @@ class TwitterDepressionVanilla(TwitterDepression):
                     "inputs": line,
                     "label": 0,
                 }
-
+    """
+    """
     @property
     def dataset_splits(self):
-        """Splits of data to produce and number of output shards for each."""
         return [{
             "split": problem.DatasetSplit.TEST,
             "shards": 1,
@@ -162,15 +161,15 @@ class TwitterDepressionVanilla(TwitterDepression):
     @property
     def already_shuffled(self):
         return True
+    """
 
 @registry.register_problem
 class TwitterDepressionAgg20Vanilla(TwitterDepression):
     @property
     def aggragate_number(self):
         return 20
-    """Twitter depression classification with aggrageate posts."""
+    """
     def generate_samples(self, data_dir, tmp_dir, dataset_split):
-        """Generate examples."""
         download_blob(tmp_dir)
         # Generate examples
         # original_vocab = _original_vocab(tmp_dir)
@@ -195,6 +194,38 @@ class TwitterDepressionAgg20Vanilla(TwitterDepression):
                             continue
                         count += 1
                         txt = txt + ' ' + line
+    """
+    def generate_samples(self, data_dir, tmp_dir, dataset_split):
+        download_blob(tmp_dir)
+        train = dataset_split == problem.DatasetSplit.TRAIN
+        dataset = "test_agg"
+        filepath = os.path.join(tmp_dir, "twitter_depression_data", dataset, 'test_text_agg.txt')
+        with tf.gfile.Open(filepath) as f:
+            count = 0
+            agg = ''
+            for line in f:
+                if count == self.aggragate_number:
+                    yield {
+                        "inputs": agg,
+                        "label": 0,
+                    }
+                    count = 0
+                    agg = ''
+                    continue
+                count += 1
+                agg = agg + ' ' + line
+
+    @property
+    def dataset_splits(self):
+        """Splits of data to produce and number of output shards for each."""
+        return [{
+            "split": problem.DatasetSplit.TEST,
+            "shards": 1,
+        }]
+
+    @property
+    def already_shuffled(self):
+        return True
 @registry.register_problem
 class TwitterDepressionCharactersAgg20(TwitterDepressionAgg20Vanilla):
     @property
