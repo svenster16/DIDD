@@ -295,7 +295,7 @@ def transformer_tpu_td():
   finetuned for twitter depression (td) classification.
   """
   hparams = transformer.transformer_base()
-  hparams.learning_rate_constant = 0.00001
+  hparams.learning_rate = 0.025
   transformer.update_hparams_for_tpu(hparams)
   return hparams
 
