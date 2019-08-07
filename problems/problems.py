@@ -199,7 +199,7 @@ class TwitterDepressionAgg20Vanilla(TwitterDepression):
         download_blob(tmp_dir)
         train = dataset_split == problem.DatasetSplit.TRAIN
         dataset = "test_agg"
-        filepath = os.path.join(tmp_dir, "twitter_depression_data", dataset, 'test_text_agg.txt')
+        filepath = os.path.join(tmp_dir, "twitter_final_depression_data", dataset, 'test_text_agg.txt')
         with tf.gfile.Open(filepath) as f:
             count = 0
             agg = ''
