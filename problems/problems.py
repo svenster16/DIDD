@@ -281,11 +281,11 @@ def transformer_textclass_big():
 def transformer_textclass_base():
   hparams = transformer.transformer_base()
   hparams.layer_prepostprocess_dropout = 0.1
-  hparams.learning_rate_warmup_steps = 50
+  hparams.learning_rate_warmup_steps = 1000
   hparams.learning_rate_constant = 6.25e-6
   hparams.learning_rate_schedule = ("linear_warmup*constant*linear_decay")
   # Set train steps to learning_rate_decay_steps or less
-  hparams.learning_rate_decay_steps = 20000
+  hparams.learning_rate_decay_steps = 10000
   return hparams
 
 @registry.register_hparams
@@ -295,7 +295,7 @@ def transformer_tpu_td():
   finetuned for twitter depression (td) classification.
   """
   hparams = transformer.transformer_base()
-  hparams.learning_rate = 0.025
+  hparams.learning_rate_constant = 0.00001
   transformer.update_hparams_for_tpu(hparams)
   return hparams
 
